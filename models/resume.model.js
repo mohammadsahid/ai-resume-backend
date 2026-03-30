@@ -115,4 +115,5 @@ const resumeSchema = new mongoose.Schema({
     minimize: false
 })
 
-export const Resume = mongoose.model("Resume", resumeSchema)
+const Resume = mongoose.model("Resume", resumeSchema)
+export default Resume

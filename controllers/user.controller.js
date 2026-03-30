@@ -4,6 +4,7 @@ import { ApiError } from "../utils/APIError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import jwt from "jsonwebtoken"
 import mongoose from "mongoose"
+import Resume from "../models/resume.model.js";
 
 
 const generateAccessAndRefreshToken = async(userId) => {
@@ -117,5 +118,73 @@ const logout = asyncHandler(async(req, res) => {
     )
 })
 
+const getUserdata = asyncHandler(async(req, res) => {
+    try {
+        const userId = req.user
+    
+        const user = await User.findById(userId).select("-password -refreshToken")
+    
+        if(!user){
+            throw new ApiError(404, "User not found")
+        }
+    
+        return res.status(200).json(
+            new ApiResponse(200, user, "User data retrieved successfully")
+        )
+    } catch (error) {
+        throw new ApiError(500, error.message)
+    }
+})
 
-export { registerUser, login, logout }
+const getResumeData = asyncHandler(async(req, res) => {
+    try {
+        const userId = req.user
+        const resume = await Resume.find({userId})
+
+        return res.status(201).json(
+            new ApiResponse(200, resume, "Resume data retrieved successfully")
+        )
+
+    } catch (error) {
+        throw new ApiError(400, error.message)
+    }
+})
+
+const refreshToken = asyncHandler(async(req, res) => {
+    try {
+        const {refreshToken} = req.cookies
+
+        const user = await User.findOne({refreshToken})
+
+        if(!user){
+            throw new ApiError(401, "Invalid refresh token")
+        }
+
+        const {accessToken, refreshToken: newRefreshToken} = await generateAccessAndRefreshToken(user._id)
+
+        const options = {
+            httpOnly: true,
+            secure: true,
+            sameSite: "strict",
+        }
+
+        return res
+        .status(200)
+        .cookie("refreshToken", newRefreshToken, options)
+        .cookie("accessToken", accessToken, options)
+        .json(
+            new ApiResponse(
+                200,
+                {
+                accessToken, refreshToken: newRefreshToken
+                },
+                "Tokens refreshed successfully"
+            )
+        )
+
+    } catch (error) {
+        throw new ApiError(401, error.message)
+    }
+})
+
+export { registerUser, login, logout, getUserdata, getResumeData, refreshToken  }
