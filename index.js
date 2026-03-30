@@ -1,14 +1,13 @@
+import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import ConnectDB from "./db/ConnectDB.js";
 import userRouter from "./routes/user.route.js";
 import cookieParser from "cookie-parser";
 import resumeRouter from "./routes/resume.routes.js";
 import aiRouter from "./routes/ai.routes.js";
 
-dotenv.config();
-
+console.log("KEY:", process.env.IMAGEKIT_PRIVATE_KEY);
 const app = express();
 
 const PORT = process.env.PORT || 4000

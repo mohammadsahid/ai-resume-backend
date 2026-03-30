@@ -1,6 +1,6 @@
 import {User} from "../models/User.model.js";
-import { ApiResponse } from "../utils/APIResponse.js";
-import { ApiError } from "../utils/APIError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import jwt from "jsonwebtoken"
 import mongoose from "mongoose"
